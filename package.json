@@ -1,11 +1,12 @@
 {
-  "name": "orbit",
+  "name": "imu_viewer",
   "version": "1.0.0",
   "description": "",
-  "main": "orbit.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "watch": "nodemon server.ts",
+    "start": "tsc && node app/server.js",
+    "test": "jest --coverage --config jest.config.ts"
   },
   "author": "Moncef Hassani",
   "license": "ISC",
