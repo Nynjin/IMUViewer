@@ -3,7 +3,8 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import modelIMU from '../../components/modelIMU/modelIMU';
+import IMUModel from '../../components/IMUModel/IMUModel';
+import StatsPanel from '../../components/StatsPanel/StatsPanel';
 
 const ThreeScene: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,7 @@ const ThreeScene: React.FC = () => {
             controls.minDistance = 1;
             controls.maxDistance = 20;
 
-            scene.add(modelIMU());
+            scene.add(IMUModel());
 
             // Animation loop
             const renderScene = () => {
@@ -54,7 +55,9 @@ const ThreeScene: React.FC = () => {
         }
     }, []);
 
-    return <div ref={containerRef} />;
+    return (
+        <div ref={containerRef}/>
+    );
 };
 
 export default ThreeScene;
