@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  imuviewer:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - ${PORT:-3000}:${PORT:-3000}
+    environment:
+      - PORT=${PORT:-3000}
