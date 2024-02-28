@@ -1,0 +1,14 @@
+.statsPanel {
+    position: absolute;
+    padding: 1%;
+    border-bottom-right-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.connected {
+    color: cyan;
+}
+
+.disconnected {
+    color: red;
+}
