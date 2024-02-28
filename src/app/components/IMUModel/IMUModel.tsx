@@ -9,7 +9,7 @@ const pitchMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
 const yawMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
 // Create a cube mesh
-const modelIMU = () => {
+const IMUModel = () => {
     const cube = new THREE.Mesh(cubeGeometry, [rollMaterial, rollMaterial, pitchMaterial, pitchMaterial, yawMaterial, yawMaterial]);
 
     // Create arrow geometries
@@ -36,4 +36,4 @@ const modelIMU = () => {
     return cube;
 }
 
-export default modelIMU;
+export default IMUModel;
