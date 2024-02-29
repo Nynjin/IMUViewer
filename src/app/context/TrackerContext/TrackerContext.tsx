@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
-import Tracker from '../../model/Tracker/Tracker';
+import React, { ReactNode, createContext, useContext, useState } from 'react';
+import Tracker from '../../types/Tracker/Tracker';
 
 interface TrackerContextType {
     tracker: Tracker;
-    updateTracker: (tracker: Tracker) => void;
+    updateTracker: (tracker: Partial<Tracker>) => void;
 }
 
 const TrackerContext = createContext<TrackerContextType | undefined>(undefined);
@@ -16,7 +16,11 @@ export const useTracker = () => {
     return context;
 }
 
-const TrackerProvider: React.FC = ({ children }) => {
+interface TrackerProviderProps {
+    children: ReactNode;
+}
+
+const TrackerProvider: React.FC<TrackerProviderProps> = ({ children }) => {
     const [tracker, setTracker] = useState<Tracker>({
         isConnected: false,
         position: {

@@ -3,12 +3,14 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import IMUModel from '../../components/IMUModel/IMUModel';
+import IMU from '../../models/IMU/IMU';
 import StatsPanel from '../../components/StatsPanel/StatsPanel';
 import { useTracker } from '../../context/TrackerContext/TrackerContext';
+import TrailRenderer from '../../models/TrailRenderer/TrailRenderer';
 
 const ThreeScene: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
+
     const { updateTracker } = useTracker();
 
     const round = (number: number, decimals: number) => {
@@ -39,38 +41,51 @@ const ThreeScene: React.FC = () => {
 
             // Create camera controls
             const controls = new OrbitControls(camera, renderer.domElement);
-            // controls.minDistance = 1;
-            // controls.maxDistance = 20;
             controls.enabled = false;
 
             // IMU Model
-            const IMU = IMUModel();
-            scene.add(IMU);
+            const imuInstance = new IMU();
+            const imu = imuInstance.imu;
+            scene.add(imu);
 
             // Grid helper
             const gridHelper = new THREE.GridHelper( 20, 41, new THREE.Color(0xffffff), new THREE.Color(0x00e0ff));
             scene.add(gridHelper);
 
+            // Trail
+            const trailRenderer = new TrailRenderer(10, 0x000000);
+            const trail = trailRenderer.trail;
+            scene.add(trail);
+            
             // Animation loop
             const renderScene = () => {
                 renderer.render(scene, camera);
                 controls.update();
-                controls.target = IMU.position;
-                IMU.rotation.x += 0.01;
-                IMU.rotation.y += 0.01;
+                controls.target = imu.position;
+                imu.rotation.x += 0.01;
+                imu.rotation.y += 0.01;
+                imu.position.x += 0.005;
+                imu.position.z += 0.005;
+                imu.position.y += 0.005;
 
-                updateTracker({
+                const IMUData = {
                     position: {
-                        x: round(IMU.position.x, 2),
-                        y: round(IMU.position.y, 2),
-                        z: round(IMU.position.z, 2),
+                        x: round(imu.position.x, 2),
+                        y: round(imu.position.y, 2),
+                        z: round(imu.position.z, 2),
                     },
                     rotation: {
-                        x: rotationInDegrees(IMU.rotation.x, 2),
-                        y: rotationInDegrees(IMU.rotation.y, 2),
-                        z: rotationInDegrees(IMU.rotation.z, 2),
+                        x: rotationInDegrees(imu.rotation.x, 2),
+                        y: rotationInDegrees(imu.rotation.y, 2),
+                        z: rotationInDegrees(imu.rotation.z, 2),
                     },
+                }
+
+                updateTracker({
+                    ...IMUData
                 });
+
+                trailRenderer.updateTrail(imu.position);
                 
                 requestAnimationFrame(renderScene);
             };
