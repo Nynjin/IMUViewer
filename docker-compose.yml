@@ -10,5 +10,6 @@ services:
       - .:/app
     ports:
       - ${PORT:-3000}:${PORT:-3000}
+      - 3001:3001
     environment:
       - PORT=${PORT:-3000}
