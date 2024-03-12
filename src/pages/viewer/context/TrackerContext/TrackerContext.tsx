@@ -1,5 +1,7 @@
-import React, { ReactNode, createContext, useContext, useState } from 'react';
-import Tracker from '../../types/Tracker/Tracker';
+import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { Socket, io } from 'socket.io-client';
+import Tracker from '@/pages/viewer/types/Tracker/Tracker';
+import IMU from '../../models/IMU/IMU';
 
 interface TrackerContextType {
     tracker: Tracker;
@@ -20,6 +22,8 @@ interface TrackerProviderProps {
     children: ReactNode;
 }
 
+let socket: Socket;
+
 const TrackerProvider: React.FC<TrackerProviderProps> = ({ children }) => {
     const [tracker, setTracker] = useState<Tracker>({
         isConnected: false,
@@ -35,11 +39,48 @@ const TrackerProvider: React.FC<TrackerProviderProps> = ({ children }) => {
         },
     });
 
+    useEffect(() => {
+        socketInitializer();
+
+        // Cleanup function to close the socket connection
+        return () => {
+            if (socket) {
+                socket.disconnect();
+            }
+        };
+    }, []);
+
+    const socketInitializer = async () => {
+        await fetch("/api/socket");
+        socket = io({
+            auth: {
+                token: "web"
+            },
+        });
+
+        socket.on("connect", () => {
+            console.log("Connected")
+        });
+
+        socket.on("disconnect", () => {
+            console.log("Disconnected")
+        });
+
+        socket.on("connect_error", async err => {
+            socketInitializer();
+        });
+
+        socket.on("imuUpdated", (data: Partial<Tracker>) => {
+            updateTracker(data);
+        });
+    }
+
     const updateTracker = (updatedFields: Partial<Tracker>) => {
         setTracker(prevTracker => ({
             ...prevTracker,
             ...updatedFields
         }));
+        IMU.getInstance().updateIMU(updatedFields);
     };
 
     return (

@@ -1,25 +1,16 @@
-"use client";
-
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import IMU from '../../models/IMU/IMU';
-import StatsPanel from '../../components/StatsPanel/StatsPanel';
-import { useTracker } from '../../context/TrackerContext/TrackerContext';
-import TrailRenderer from '../../models/TrailRenderer/TrailRenderer';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { useTracker } from '@/pages/viewer/context/TrackerContext/TrackerContext';
+import StatsPanel from '@/pages/viewer/components/StatsPanel/StatsPanel';
+import IMU from '@/pages/viewer/models/IMU/IMU';
+import TrailRenderer from '@/pages/viewer/models/TrailRenderer/TrailRenderer';
+import styles from './ThreeScene.module.css';
 
 const ThreeScene: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const { updateTracker } = useTracker();
-
-    const round = (number: number, decimals: number) => {
-        return Math.round(number * Math.pow(10, decimals)) / Math.pow(10, decimals);
-    }
-
-    const rotationInDegrees = (radAngle: number, decimals: number) => {
-        return (round(THREE.MathUtils.euclideanModulo(THREE.MathUtils.radToDeg(radAngle), 360), decimals));
-    }
+    const { tracker } = useTracker();
 
     useEffect(() => {
         if (containerRef.current) {
@@ -44,52 +35,32 @@ const ThreeScene: React.FC = () => {
             controls.enabled = false;
 
             // IMU Model
-            const imuInstance = new IMU();
+            const imuInstance = new IMU(0xff0000, 0x0000ff, 0x00ff00);
             const imu = imuInstance.imu;
             scene.add(imu);
 
             // Grid helper
-            const gridHelper = new THREE.GridHelper( 20, 41, new THREE.Color(0xffffff), new THREE.Color(0x00e0ff));
+            const gridHelper = new THREE.GridHelper(20, 41, new THREE.Color(0xffffff), new THREE.Color(0x00e0ff));
             scene.add(gridHelper);
 
             // Trail
             const trailRenderer = new TrailRenderer(10, 0x000000);
             const trail = trailRenderer.trail;
             scene.add(trail);
-            
+
             // Animation loop
             const renderScene = () => {
                 renderer.render(scene, camera);
                 controls.update();
                 controls.target = imu.position;
-                imu.rotation.x += 0.01;
-                imu.rotation.y += 0.01;
-                imu.position.x += 0.005;
-                imu.position.z += 0.005;
-                imu.position.y += 0.005;
 
-                const IMUData = {
-                    position: {
-                        x: round(imu.position.x, 2),
-                        y: round(imu.position.y, 2),
-                        z: round(imu.position.z, 2),
-                    },
-                    rotation: {
-                        x: rotationInDegrees(imu.rotation.x, 2),
-                        y: rotationInDegrees(imu.rotation.y, 2),
-                        z: rotationInDegrees(imu.rotation.z, 2),
-                    },
-                }
-
-                updateTracker({
-                    ...IMUData
-                });
+                imuInstance.updateIMU(tracker);
 
                 trailRenderer.updateTrail(imu.position);
-                
+
                 requestAnimationFrame(renderScene);
             };
-            
+
             // Handle window resize
             const handleResize = () => {
                 const width = window.innerWidth;
@@ -113,7 +84,7 @@ const ThreeScene: React.FC = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className='threeScene'>
+        <div ref={containerRef} className={styles.threeScene}>
             <StatsPanel />
         </div>
     );

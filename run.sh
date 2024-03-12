@@ -21,7 +21,7 @@ default() {
     fi
 
     docker compose -f "$init_dir/docker-compose.yml" build --build-arg MODE="$DEFAULT_MODE"
-    docker compose -f "$init_dir/docker-compose.yml" up
+    docker compose -f "$init_dir/docker-compose.yml" up 
     exit 0
 }
 
