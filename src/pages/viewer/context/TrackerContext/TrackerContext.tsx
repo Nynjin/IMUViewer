@@ -52,7 +52,11 @@ const TrackerProvider: React.FC<TrackerProviderProps> = ({ children }) => {
 
     const socketInitializer = async () => {
         await fetch("/api/socket");
-        socket = io();
+        socket = io({
+            auth: {
+                token: "web"
+            },
+        });
 
         socket.on("connect", () => {
             console.log("Connected")

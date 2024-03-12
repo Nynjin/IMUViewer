@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import type { Server as HTTPServer } from "http";
-import type { Server as IOServer } from "socket.io";
-import type { Socket as NetSocket } from "net";
-import { Server, Socket } from "socket.io";
-import Tracker from "@/pages/viewer/types/Tracker/Tracker";
+import { NextApiRequest, NextApiResponse } from 'next';
+import type { Server as HTTPServer } from 'http';
+import type { Server as IOServer } from 'socket.io';
+import type { Socket as NetSocket } from 'net';
+import { Server, Socket } from 'socket.io';
+import Tracker from '@/pages/viewer/types/Tracker/Tracker';
 
 interface SocketServer extends HTTPServer {
     io?: IOServer | undefined;
@@ -29,22 +29,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseW
     res.socket.server.io = io;
 
     io.on('connection', (socket: Socket) => {
-        console.log("Socker.IO client connected");
+        const token = socket.handshake.auth?.token || socket.handshake.headers?.token;
 
-        // TODO : auth instead of event
-        socket.on("imuConnected", () => {
-            console.log("IMU connected");
-            socket.broadcast.emit("imuUpdated", { isConnected: true });
-        });
+        switch (token) {
+            case "imu":
+                // Handle imu client-specific events
+                console.log("IMU client connected");
+                socket.join("imu");
+                socket.to("web").emit("imuUpdated", { isConnected: true });
 
-        // emits an event when imu is updated
-        socket.on("updateIMU", (data: Partial<Tracker>) => {
-            socket.broadcast.emit("imuUpdated", data);
-        });
+                socket.on("updateIMU", (data: Partial<Tracker>) => {
+                    socket.to("web").emit("imuUpdated", data);
+                });
 
-        socket.on("disconnect", () => {
-            console.log("Socket.IO client disconnected");
-        });
+                socket.on("disconnect", () => {
+                    console.log("IMU client disconnected");
+                    socket.to("web").emit("imuUpdated", { isConnected: false });
+                });
+                break;
+            case "web":
+                // Handle web client-specific events
+                console.log("Web client connected");
+                socket.join("web");
+
+                socket.on("disconnect", () => {
+                    console.log("Web client disconnected");
+                });
+                break;
+            default:
+                console.log("Invalid client token");
+                socket.disconnect(true);
+                break;
+        }
     });
 
     console.log("Socket.IO started");
