@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { useTracker } from '@/pages/viewer/context/TrackerContext/TrackerContext';
-import StatsPanel from '@/pages/viewer/components/StatsPanel/StatsPanel';
-import IMU from '@/pages/viewer/models/IMU/IMU';
-import TrailRenderer from '@/pages/viewer/models/TrailRenderer/TrailRenderer';
-import styles from './ThreeScene.module.css';
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { useTracker } from "@/pages/viewer/context/TrackerContext/TrackerContext";
+import StatsPanel from "@/pages/viewer/components/StatsPanel/StatsPanel";
+import IMU from "@/pages/viewer/models/IMU/IMU";
+import TrailRenderer from "@/pages/viewer/models/TrailRenderer/TrailRenderer";
+import styles from "./ThreeScene.module.css";
+import { motion } from "framer-motion";
 
 const ThreeScene: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -84,9 +85,13 @@ const ThreeScene: React.FC = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className={styles.threeScene}>
-            <StatsPanel />
-        </div>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}>
+            <div ref={containerRef} className={styles.threeScene}>
+                <StatsPanel />
+            </div>
+        </motion.div>
     );
 };
 

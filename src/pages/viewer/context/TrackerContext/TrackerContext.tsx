@@ -1,7 +1,7 @@
-import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
-import { Socket, io } from 'socket.io-client';
-import Tracker from '@/pages/viewer/types/Tracker/Tracker';
-import IMU from '../../models/IMU/IMU';
+import React, { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import { Socket, io } from "socket.io-client";
+import Tracker from "@/pages/viewer/types/Tracker/Tracker";
+import IMU from "@/pages/viewer/models/IMU/IMU";
 
 interface TrackerContextType {
     tracker: Tracker;
@@ -59,14 +59,15 @@ const TrackerProvider: React.FC<TrackerProviderProps> = ({ children }) => {
         });
 
         socket.on("connect", () => {
-            console.log("Connected")
+            console.log("Connected");
         });
 
-        socket.on("disconnect", () => {
-            console.log("Disconnected")
+        socket.on("disconnect", () => {;
+            console.log("Disconnected");
+            socketInitializer();
         });
 
-        socket.on("connect_error", async err => {
+        socket.on("connect_error", () => {
             socketInitializer();
         });
 
