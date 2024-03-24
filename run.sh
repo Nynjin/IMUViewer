@@ -20,25 +20,32 @@ default() {
         exit 1
     fi
 
-    docker compose -f "$init_dir/docker-compose.yml" build --build-arg MODE="$DEFAULT_MODE"
-    docker compose -f "$init_dir/docker-compose.yml" up 
+    docker compose -f "$init_dir/docker-compose.$DEFAULT_ENV.yml" build --build-arg MODE="$DEFAULT_MODE"
+    docker compose -f "$init_dir/docker-compose.$DEFAULT_ENV.yml" up 
     exit 0
 }
 
 # Check if the correct number of arguments is provided
-if [ "$#" -ne 1 ]; then
-    echo "No mode provided. Using default config..."
+if [ "$#" -ne 2 ]; then
+    echo "Incorrect number of arguments. Using default config..."
     default
 fi
 
-# Validate $1 (mode) - should be "install", "test", "build", "execute" or "clean"
-if [ "$1" != "dev" ] && [ "$1" != "build" ] && [ "$1" != "start" ]; then
+# Validate $1 (env) - should be "dev" or "prod"
+if [ "$1" != "DEV" ] && [ "$1" != "PROD" ]; then
+    echo "Error: Invalid environment. Use 'DEV' or 'PROD'."
+    echo "Using default config..."
+    default
+fi
+
+# Validate $2 (mode) - should be "install", "test", "build", "execute" or "clean"
+if [ "$2" != "dev" ] && [ "$2" != "build" ] && [ "$2" != "start" ]; then
     echo "Error: Invalid mode. Use 'dev', 'build' or 'start'."
     echo "Using default config..."
     default
 fi
 
 # If parameters are correct, proceed with Docker Compose commands
-docker compose -f "$init_dir/docker-compose.yml" build --build-arg MODE="$1"
-docker compose -f "$init_dir/docker-compose.yml" up
+docker compose -f "$init_dir/docker-compose.$1.yml" build --build-arg MODE="$2"
+docker compose -f "$init_dir/docker-compose.$1.yml" up
 exit 0
