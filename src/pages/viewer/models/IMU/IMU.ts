@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import Tracker from '@/pages/viewer/types/Tracker/Tracker';
+import * as THREE from "three";
+import Tracker from "@/pages/viewer/types/Tracker/Tracker";
 
 class IMU {
     imu: THREE.Mesh;

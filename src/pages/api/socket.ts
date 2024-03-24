@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import type { Server as HTTPServer } from 'http';
-import type { Server as IOServer } from 'socket.io';
-import type { Socket as NetSocket } from 'net';
-import { Server, Socket } from 'socket.io';
-import Tracker from '@/pages/viewer/types/Tracker/Tracker';
+import { NextApiRequest, NextApiResponse } from "next";
+import type { Server as HTTPServer } from "http";
+import type { Server as IOServer } from "socket.io";
+import type { Socket as NetSocket } from "net";
+import { Server, Socket } from "socket.io";
+import Tracker from "@/pages/viewer/types/Tracker/Tracker";
 
 interface SocketServer extends HTTPServer {
     io?: IOServer | undefined;
@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseW
     const io = new Server(res.socket.server, { addTrailingSlash: false, cors: { origin: "*" } })
     res.socket.server.io = io;
 
-    io.on('connection', (socket: Socket) => {
+    io.on("connection", (socket: Socket) => {
         const token = socket.handshake.auth?.token || socket.handshake.headers?.token;
 
         switch (token) {
