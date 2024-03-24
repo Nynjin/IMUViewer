@@ -1,7 +1,6 @@
 import React from "react";
 import { Divider } from "@nextui-org/react";
 import { useTracker } from "@/pages/viewer/context/TrackerContext/TrackerContext";
-import styles from "./StatsPanel.module.css";
 
 const StatsPanel: React.FC = () => {
     const { tracker } = useTracker();
@@ -10,7 +9,7 @@ const StatsPanel: React.FC = () => {
         <div className="absolute top-0 left-0 p-3 bg-black bg-opacity-50 rounded-br-xl">
             <div>
                 <p>Tracker status : </p>
-                <span className={tracker.isConnected ? "text-cyan" : 'text'}>
+                <span className={tracker.isConnected ? "text-sky-500 font-bold" : 'text-red-500 font-bold'}>
                     {tracker.isConnected ? 'Connected' : 'Disconnected'}
                 </span>
             </div>

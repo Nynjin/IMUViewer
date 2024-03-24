@@ -1,10 +1,10 @@
 import { NextUIProvider } from "@nextui-org/react";
-import CardComponent from "./components/CardComponent";
+import { HomePage } from "./pages/HomePage/HomePage";
 
 export default function Home() {
     return (
         <NextUIProvider>
-            <CardComponent title={"IMU Viewer"} description={"desc"} image={"imu.PNG"}/>
+            <HomePage />
         </NextUIProvider>
     );
 }

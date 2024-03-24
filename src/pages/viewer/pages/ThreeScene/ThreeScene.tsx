@@ -5,7 +5,6 @@ import { useTracker } from "@/pages/viewer/context/TrackerContext/TrackerContext
 import StatsPanel from "@/pages/viewer/components/StatsPanel/StatsPanel";
 import IMU from "@/pages/viewer/models/IMU/IMU";
 import TrailRenderer from "@/pages/viewer/models/TrailRenderer/TrailRenderer";
-import styles from "./ThreeScene.module.css";
 import { motion } from "framer-motion";
 
 const ThreeScene: React.FC = () => {
@@ -88,7 +87,7 @@ const ThreeScene: React.FC = () => {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}>
-            <div ref={containerRef} className={styles.threeScene}>
+            <div ref={containerRef} className="absolute">
                 <StatsPanel />
             </div>
         </motion.div>
