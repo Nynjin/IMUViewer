@@ -1,4 +1,4 @@
-# Ansible-project
+# IMU-Viewer
 
 <div align="center">
   <a href="https://github.com/Nynjin/IMUViewer/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/Nynjin/IMUViewer?label=Latest%20Release&logo=github"></a>
