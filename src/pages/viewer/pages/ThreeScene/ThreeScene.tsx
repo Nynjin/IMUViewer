@@ -7,6 +7,11 @@ import IMU from "@/pages/viewer/models/IMU/IMU";
 import TrailRenderer from "@/pages/viewer/models/TrailRenderer/TrailRenderer";
 import { motion } from "framer-motion";
 
+const variants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+}
+
 const ThreeScene: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -85,11 +90,11 @@ const ThreeScene: React.FC = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}>
-            <div ref={containerRef} className="absolute">
-                <StatsPanel />
-            </div>
+            initial="initial"
+            animate="animate"
+            variants={variants}
+            ref={containerRef}>
+            <StatsPanel />
         </motion.div>
     );
 };
