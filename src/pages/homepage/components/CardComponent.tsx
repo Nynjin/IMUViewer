@@ -7,6 +7,7 @@ type CardComponentProps = {
   title: string;
   description: string;
   image: string;
+  route: string;
 };
 
 const variants = {
@@ -19,6 +20,7 @@ const CardComponent: React.FC<CardComponentProps> = ({
   title,
   description,
   image,
+  route,
 }) => {
   const [isZoomed, setZoom] = useState(false);
   const [scope, animate] = useAnimate();
@@ -27,24 +29,36 @@ const CardComponent: React.FC<CardComponentProps> = ({
 
   const handleMouseEnter = async () => {
     if (!isZoomed) {
-      await animate(scope.current, variants.hover, { duration: 0.2 });
+      try {
+        await animate(scope.current, variants.hover, { duration: 0.2 });
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
   const handleMouseLeave = async () => {
     if (!isZoomed) {
-      await animate(scope.current, variants.initial, { duration: 0.2 });
+      try {
+        await animate(scope.current, variants.initial, { duration: 0.2 });
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
   const handleCardClick = async () => {
     setZoom(true);
-    await animate(scope.current, variants.zoom, { duration: 0.5 });
-    router.push('/viewer');
+    try {
+      await animate(scope.current, variants.zoom, { duration: 0.5 });
+    } catch (e) {
+      console.error(e);
+    }
+    router.push(route);
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center h-screen bg-black">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}>
