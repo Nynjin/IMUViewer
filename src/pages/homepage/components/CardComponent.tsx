@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Card, CardBody, CardFooter, CardHeader, Image } from "@nextui-org/react";
-import { motion, useAnimate } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 type CardComponentProps = {
@@ -11,9 +11,8 @@ type CardComponentProps = {
 };
 
 const variants = {
-  initial: { opacity: 1, scale: 0.5 },
-  hover: { scale: 0.6 },
-  zoom: { opacity: 0, scale: 0.95 },
+  initial: { opacity: 1, scale: 0.5, transition: { duration: 0.2 }},
+  zoom: { opacity: 0, scale: 0.95, transition: { duration: 0.5 }},
 }
 
 const CardComponent: React.FC<CardComponentProps> = ({
@@ -23,56 +22,27 @@ const CardComponent: React.FC<CardComponentProps> = ({
   route,
 }) => {
   const [isZoomed, setZoom] = useState(false);
-  const [scope, animate] = useAnimate();
-
   const router = useRouter()
 
-  const handleMouseEnter = async () => {
-    if (!isZoomed) {
-      try {
-        await animate(scope.current, variants.hover, { duration: 0.2 });
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  };
-
-  const handleMouseLeave = async () => {
-    if (!isZoomed) {
-      try {
-        await animate(scope.current, variants.initial, { duration: 0.2 });
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  };
-
-  const handleCardClick = async () => {
-    setZoom(true);
-    try {
-      await animate(scope.current, variants.zoom, { duration: 0.5 });
-    } catch (e) {
-      console.error(e);
-    }
-    router.push(route);
-  };
-
   return (
-    <div className="flex justify-center items-center h-screen bg-black">
+    <div className="flex justify-center items-center h-screen bg-black overflow-hidden">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}>
         <motion.div
-          initial="initial"
+          initial={"initial"}
+          animate={isZoomed ? "zoom" : ""}
           variants={variants}
-          onClick={handleCardClick}
-          ref={scope}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onClick={() => setZoom(true)}
+          onAnimationComplete={() => {
+              if(isZoomed) {
+                router.push(route);
+              }
+            }
+          }
         >
-          
           <Card
-            className="cursor-pointer"
+            className={isZoomed ? "scale-125" : "cursor-pointer transition duration-300 hover:scale-125"}
             shadow="sm"
           >
             <CardHeader className="absolute z-10 top-1 flex-col !items-start ml-4 mt-4">
@@ -90,7 +60,7 @@ const CardComponent: React.FC<CardComponentProps> = ({
               <div className="absolute inset-0 bg-black opacity-50"></div>
             </CardBody>
             <CardFooter className="flex justify-center items-center absolute z-10 bottom-1 flex-col mb-4">
-              <p className="text-3xl text-white font-light mt-14">
+              <p className="text-2xl text-white font-light mt-14 text-center">
                 {description}
               </p>
             </CardFooter>
