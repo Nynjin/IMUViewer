@@ -8,9 +8,11 @@ import React, {
 import { Socket, io } from "socket.io-client";
 import Tracker from "@/pages/viewer/types/Tracker";
 import IMU from "@/pages/viewer/models/IMU";
+import { nanoid } from "nanoid";
 
 interface TrackerContextType {
   tracker: Tracker;
+  token: string | null;
   updateTracker: (tracker: Partial<Tracker>) => void;
 }
 
@@ -28,7 +30,7 @@ interface TrackerProviderProps {
   children: ReactNode;
 }
 
-let socket: Socket;
+let socket: Socket | null = null;
 
 const TrackerProvider: React.FC<TrackerProviderProps> = ({ children }) => {
   const [tracker, setTracker] = useState<Tracker>({
@@ -45,41 +47,52 @@ const TrackerProvider: React.FC<TrackerProviderProps> = ({ children }) => {
     },
   });
 
-  useEffect(() => {
-    socketInitializer();
+  const [token, setToken] = useState<string | null>(null);
 
-    // Cleanup function to close the socket connection
+  useEffect(() => {
+    // Generate the token only on the client side after the component has mounted
+    if (!token) {
+      const generatedToken = nanoid(8);
+      setToken(generatedToken);
+      socketInitializer(generatedToken);
+    }
+
     return () => {
       if (socket) {
         socket.disconnect();
       }
     };
-  }, []);
+  }, [token]);
 
-  const socketInitializer = async () => {
-    await fetch("/api/socket");
-    socket = io({
-      auth: {
-        token: "web",
-      },
-    });
+  const socketInitializer = async (token: string) => {
+    try {
+      await fetch("/api/socket");
+      socket = io({
+        query: {
+          type: "web",
+          token,
+        },
+      });
 
-    socket.on("connect", () => {
-      console.log("Connected");
-    });
+      socket.on("connect", () => {
+        console.log("Connected");
+      });
 
-    socket.on("disconnect", () => {
-      console.log("Disconnected");
-      socketInitializer();
-    });
+      socket.on("disconnect", () => {
+        console.log("Disconnected");
+        socketInitializer(token);
+      });
 
-    socket.on("connect_error", () => {
-      socketInitializer();
-    });
+      socket.on("connect_error", () => {
+        socketInitializer(token);
+      });
 
-    socket.on("imuUpdated", (data: Partial<Tracker>) => {
-      updateTracker(data);
-    });
+      socket.on("imuUpdated", (data: Partial<Tracker>) => {
+        updateTracker(data);
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const updateTracker = (updatedFields: Partial<Tracker>) => {
@@ -91,7 +104,7 @@ const TrackerProvider: React.FC<TrackerProviderProps> = ({ children }) => {
   };
 
   return (
-    <TrackerContext.Provider value={{ tracker, updateTracker }}>
+    <TrackerContext.Provider value={{ tracker, token, updateTracker }}>
       {children}
     </TrackerContext.Provider>
   );

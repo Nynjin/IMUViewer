@@ -3,7 +3,7 @@ import { Divider } from "@nextui-org/react";
 import { useTracker } from "@/pages/viewer/context/TrackerContext";
 
 const StatsPanel: React.FC = () => {
-  const { tracker } = useTracker();
+  const { tracker, token } = useTracker();
 
   return (
     <div className="absolute top-0 left-0 p-3 bg-black bg-opacity-50 rounded-br-xl">
@@ -30,6 +30,13 @@ const StatsPanel: React.FC = () => {
         Rotation :<p>rX : {tracker.rotation.x}</p>
         <p>rY : {tracker.rotation.y}</p>
         <p>rZ : {tracker.rotation.z}</p>
+      </div>
+      <Divider />
+      <div>
+        <p>Connection Code:</p>
+        <span className="text-green-500 font-bold">
+          {token || "Loading..."} {/* Render "Loading..." on the server */}
+        </span>
       </div>
     </div>
   );
