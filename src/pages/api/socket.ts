@@ -3,7 +3,7 @@ import type { Server as HTTPServer } from "http";
 import type { Server as IOServer } from "socket.io";
 import type { Socket as NetSocket } from "net";
 import { Server, Socket } from "socket.io";
-import Tracker from "@/pages/viewer/types/Tracker/Tracker";
+import Tracker from "@/pages/viewer/types/Tracker";
 
 interface SocketServer extends HTTPServer {
     io?: IOServer | undefined;
