@@ -8,12 +8,12 @@ services:
       - .:/app
     environment:
       - PORT=3000
+      - VIRTUAL_PORT=3000
+      - VIRTUAL_HOST=tracker.moncef.studio
+      - LETSENCRYPT_HOST=tracker.moncef.studio
+      - LETSENCRYPT_EMAIL=moncef.hassani03@gmail.com
 
-  nginx:
-    image: nginx:stable-alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - imuviewer
+networks:
+  default:
+    external:
+      name: nginx-proxy

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { Socket, io } from "socket.io-client";
-import Tracker from "@/pages/viewer/types/Tracker";
+import { Tracker } from "@/types/Tracker";
 import IMU from "@/pages/viewer/models/IMU";
 import { nanoid } from "nanoid";
 
